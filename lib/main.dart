@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var switchStatus = true;
   final snackBar = SnackBar(
     content: const Text('芜湖~'),
-  )
+  );
 
   void _setBrightness() {
     setState(() {
