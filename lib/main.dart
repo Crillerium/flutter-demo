@@ -51,6 +51,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var themeStatus = Icons.sunny;
   var switchStatus = true;
+  final snackBar = SnackBar(
+    content: const Text('芜湖~'),
+  )
 
   void _setBrightness() {
     setState(() {
@@ -74,6 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+            IconButton(
+                icon: Icon(Icons.message),
+                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(snackBar)
+            )
+        ]
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -94,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text('一个打发时间用的按钮'),
             Switch(
                 value: switchStatus,
                 onChanged: (bool value) {
