@@ -13,11 +13,11 @@ class MyApp extends StatelessWidget {
       light: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
-          colorSchemeSeed: Colors.green),
+          colorSchemeSeed: Colors.orange),
       dark: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
-          colorSchemeSeed: Colors.green),
+          colorSchemeSeed: Colors.orange),
       initial: AdaptiveThemeMode.light,
       debugShowFloatingThemeButton: true,
       builder: (theme, darkTheme) => MaterialApp(
