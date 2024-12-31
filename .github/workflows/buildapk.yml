@@ -19,9 +19,9 @@ jobs:
             - run: flutter build appbundle
             - uses: actions/upload-artifact@v4
               with:
-                  name: APK格式安装包
+                  name: APK_Package
                   path: build/app/outputs/apk/release/app-release.apk
             - uses: actions/upload-artifact@v4
               with:
-                  name: AAB格式安装包
+                  name: AAB_Package
                   path: build/app/outputs/bundle/release/app-release.aab
