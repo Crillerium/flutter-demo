@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:dio/dio.dart';
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -7,40 +8,22 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return AdaptiveTheme(
-      light: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.light,
-          colorSchemeSeed: Colors.orange),
-      dark: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorSchemeSeed: Colors.orange),
-      initial: AdaptiveThemeMode.light,
-      debugShowFloatingThemeButton: true,
-      builder: (theme, darkTheme) => MaterialApp(
-        title: 'Blossom Music',
-        theme: theme,
-        darkTheme: darkTheme,
-        home: const MyHomePage(title: 'Blossom Music'),
+    return MaterialApp(
+      title: '一言',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
+      home: const MyHomePage(title: '一言'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -49,21 +32,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var themeStatus = Icons.sunny;
-  var switchStatus = true;
-  final snackBar = SnackBar(
-    content: const Text('芜湖~'),
-  );
+  final dio = Dio();
+  late Future<String?> future;
 
-  void _setBrightness() {
+  @override
+  void initState() {
+    super.initState();
+    future = fetchHitokoto();
+  }
+
+  Future<String?> fetchHitokoto() async {
+    try {
+      var response = await dio.get<String>("https://v1.hitokoto.cn/");
+      var resMap = json.decode(response.data.toString());
+      return resMap['hitokoto'];
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  void _refresh() {
     setState(() {
-      if (themeStatus == Icons.sunny) {
-        AdaptiveTheme.of(context).setDark();
-        themeStatus = Icons.nightlight;
-      } else {
-        AdaptiveTheme.of(context).setLight();
-        themeStatus = Icons.sunny;
-      }
+      future = fetchHitokoto();
     });
   }
 
@@ -71,60 +62,28 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.ss
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(widget.title),
-        actions: [
-            IconButton(
-                icon: Icon(Icons.message),
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(snackBar)
-            )
-        ]
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('一个打发时间用的按钮'),
-            Switch(
-                value: switchStatus,
-                onChanged: (bool value) {
-                  setState(() {
-                    switchStatus = value;
-                  });
-                })
-          ],
-        ),
+      body: FutureBuilder<String?>(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Padding(padding: const EdgeInsets.all(30),child: Text('出错辣! ${snapshot.error}')));
+          } else if (snapshot.hasData) {
+            return Center(child: Padding(padding: const EdgeInsets.all(30),child: Text(snapshot.data!)));
+          } else {
+            return Center(child: Padding(padding: const EdgeInsets.all(30),child: Text('请求失败,我们完蛋辣！')));
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _setBrightness,
-        tooltip: 'Brightness',
-        child: Icon(themeStatus),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        onPressed: _refresh,
+        tooltip: 'Refresh',
+        child: const Icon(Icons.refresh),
+      ),
     );
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
   }
 }
