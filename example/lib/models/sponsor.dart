@@ -5,9 +5,9 @@ import 'package:url_launcher/link.dart';
 /// Current sponsors of the project <3
 const sponsors = [
   Person(
-    username: 'h3x4d3c1m4l',
-    imageUrl: 'https://avatars.githubusercontent.com/u/2611894?v=4',
-    name: 'Sander in \'t Hout',
+    username: 'Crillerium',
+    imageUrl: 'https://avatars.githubusercontent.com/u/96243292?v=4',
+    name: 'Crillerium',
   ),
   Person(
     username: 'phorcys420',
