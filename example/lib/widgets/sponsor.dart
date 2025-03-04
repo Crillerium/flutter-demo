@@ -30,8 +30,8 @@ class SponsorDialog extends StatelessWidget {
         children: [
           Expanded(
             child: _Tier(
-              name: 'Royal Secretary',
-              price: r'US$6 per month',
+              name: 'Crillerium',
+              price: r'US$0 per month',
               benefits: [
                 'General support',
                 'Priority on issues fix',
